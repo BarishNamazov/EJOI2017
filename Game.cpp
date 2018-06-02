@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int arr[200005];
+int arr[100005];
 int main() {
     ios_base :: sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
@@ -13,16 +13,29 @@ int main() {
     }
     for (int cc = 1; cc <= k; cc++) {
         int p; cin >> p;
-        multiset <int> s;
+        vector <int> c(n + 1, 0);
+        int cur = 0;
         for (int i = 1; i <= p; i++) {
-            s.insert(arr[i]);
+            c[arr[i]]++;
+            cur = max(cur, arr[i]);
         }
-        int a[2] = {0, 0}, f = 1, idx = p + 1;
-        while (!s.empty()) {
-            a[f = 1 - f] += *s.rbegin();
-            s.erase(s.find(*s.rbegin()));
-            if (idx <= n) {
-                s.insert(arr[idx++]);
+        long long a[2] = {0, 0}; int f = 1, dont = 0;
+        for (int i = p + 1; i <= n; i++) {
+            if (dont == 0) {
+                a[f = 1 - f] += cur; c[cur]--;
+            }
+            if (arr[i] > cur) {
+                a[f = 1 - f] += arr[i];
+                dont = 1;
+            } else {
+                c[arr[i]]++;
+                dont = 0;
+                for (; cur > 0 && c[cur] == 0; cur--);
+            }
+        }
+        for (int i = n; i >= 1; i--) {
+            while (c[i] > 0) {
+                a[f = 1 - f] += i, c[i]--;
             }
         }
         cout << a[0] - a[1] << endl;
